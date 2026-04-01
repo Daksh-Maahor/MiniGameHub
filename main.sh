@@ -6,6 +6,7 @@ then
 fi
 
 source venv/bin/activate
+pip install numpy pygame
 
 hash() {
     printf "%s" "$1" | sha256sum | awk '{print $1}'
