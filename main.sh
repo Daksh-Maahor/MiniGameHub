@@ -1,12 +1,22 @@
 #!/bin/bash
 
-if [[ ! -d venv ]]
+if [[ ! -f venv/bin/activate || ! -f venv/bin/python || ! -f venv/bin/pip ]]
 then
+    rm -rf venv
     python3 -m venv venv
 fi
 
 source venv/bin/activate
-pip install numpy pygame
+
+if [ ! -d venv/lib/python*/site-packages/numpy ]
+then
+    pip install numpy
+fi
+
+if [ ! -d venv/lib/python*/site-packages/pygame ]
+then
+    pip install pygame
+fi
 
 hash() {
     printf "%s" "$1" | sha256sum | awk '{print $1}'
@@ -52,11 +62,15 @@ login() {
     local username
     read -p "Enter username: " username
 
+    echo "Hashing username..."
+
     local sha_user
     sha_user=$(hash "$username")
 
     local found=0
     local stored_user stored_pass
+
+    echo "Checking user in database..."
 
     while IFS=$'\t' read -r stored_user stored_pass
     do
@@ -66,6 +80,8 @@ login() {
             break
         fi
     done < users.tsv
+
+    echo "User check complete."
 
     if [[ $found -eq 0 ]]
     then
@@ -108,4 +124,4 @@ fi
 
 echo "Both users authenticated successfully!"
 
-python3 game.py "$user1" "$user2
+python3 game.py "$user1" "$user2"
