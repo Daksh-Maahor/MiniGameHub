@@ -1,6 +1,7 @@
 import sys
 import pygame
 import numpy as np
+from games.tictactoe import Connect4
 
 class BoardGame:
     def __init__(self, player1, player2, rows, cols):
@@ -88,7 +89,6 @@ def main():
     while True:
         choice = show_menu(screen, font)
         if choice == "connect4":
-            from games.tictactoe import Connect4
             game = Connect4(player1, player2)
         elif choice == "othello":
             from games.tictactoe import Othello
