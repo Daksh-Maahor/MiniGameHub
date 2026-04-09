@@ -18,8 +18,8 @@ def show_menu(screen,font):
     while True:
         screen.fill((0, 0, 0))
         title = font.render("Game Hub", True, (255, 255, 255))
-        screen.blit(title, (220, 40))
-        font = pygame.font.SysFont("Lora", 60)
+        screen.blit(title, (120, 40))
+        font1 = pygame.font.SysFont("Lora", 60)
         options=[
             "1-Connect4",
             "2-Othello",
@@ -28,10 +28,10 @@ def show_menu(screen,font):
         ]
         for i in range (0,4):
             if (i != 3):
-                op=font.render(options[i], True, (0, 0, 255))
+                op=font1.render(options[i], True, (0, 0, 255))
             else:
-                op=font.render(options[i], True, (255, 0, 0))
-            screen.blit(op,(160, 160 + i*60))
+                op=font1.render(options[i], True, (255, 0, 0))
+            screen.blit(op,(180, 180 + i*80))
 
         pygame.display.flip()
         for event in pygame.event.get():
@@ -45,7 +45,7 @@ def show_menu(screen,font):
                     return "othello"
                 elif event.key == pygame.K_3:
                     return "tictactoe"
-                elif event.type == pygame.QUIT:
+                elif event.type == pygame.K_ESCAPE:
                     pygame.quit()
                     sys.exit()
 
@@ -63,7 +63,6 @@ def run_game(screen, game):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
                 game.handle_click(x, y)
-
                 winner = game.check_win()
                 if winner:
                     show_result(screen, font, winner)
@@ -84,14 +83,14 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((600,600))
     pygame.display.set_caption("Mini Game Hub")
-    font = pygame.font.SysFont("Arial", 60)
+    font = pygame.font.SysFont("Arial", 80)
     while True:
         choice = show_menu(screen, font)
         if choice == "connect4":
-            from games.tictactoe import Connect4
+            from games.connect4 import Connect4
             game = Connect4(player1, player2)
         elif choice == "othello":
-            from games.tictactoe import Othello
+            from games.othello import Othello
             game = Othello(player1, player2)
         elif choice == "tictactoe":
             from games.tictactoe import TicTacToe
