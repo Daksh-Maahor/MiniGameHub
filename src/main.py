@@ -1,7 +1,7 @@
 import sys
 import pygame
 
-from Game import Renderer
+from game import Renderer
 
 def main():
     pygame.init()

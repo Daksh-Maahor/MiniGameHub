@@ -1,6 +1,8 @@
 import pygame
 import numpy as np
 
+from utils.Colors import Colors
+
 class State:
     # default is menu state
     def __init__(self, player1, player2):
@@ -11,7 +13,7 @@ class State:
         pass
 
     def render(self, screen):
-        pass
+        screen.fill(Colors.WHITE)
 
     def switch_turn(self):
         self.current_turn = 1 - self.current_turn

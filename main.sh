@@ -82,7 +82,7 @@ login() {
             found=1
             break
         fi
-    done < users.tsv
+    done < data/users.tsv
 
     # User check complete
 
@@ -128,4 +128,4 @@ fi
 
 echo "Both users authenticated successfully!"
 
-python3 main.py "$user1" "$user2"
+python3 src/main.py "$user1" "$user2"
