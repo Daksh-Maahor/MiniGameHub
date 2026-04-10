@@ -1,69 +1,29 @@
 import pygame
 import numpy as np
+from src.UI.State import State
+from utils.Settings import SCREEN_SIZE, NUM_SQUARES
 
-class EventManager:
-    def __init__(self):
-        self.mouse_x = 0
-        self.mouse_y = 0
-        self.left_down = False
+class TicTacToeState(State):
+    def __init__(self, player1, player2):
+        super().__init__(player1, player2)
+        self.board = np.full((10, 10), -1) # 10x10 board
+    
+    def update(self):
+        pass
 
-def main():
-    pygame.init()
-
-    SCREEN_SIZE = 720
-    NUM_SQUARES = 10
-
-    screen = pygame.display.set_mode((SCREEN_SIZE, SCREEN_SIZE))
-    pygame.display.set_caption("TicTacToe")
-    clock = pygame.time.Clock()
-
-    running = True
-
-    # COLORS
-    WHITE = (255, 255, 255)
-    BLACK = (  0,   0,   0)
-
-    event_manager = EventManager()
-
-    board = np.full((NUM_SQUARES, NUM_SQUARES), -1)
-    print(board)
-
-    CURRENT_TURN = 1 # 1 : X, 0 : O, -1 : EMPTY
-
-    while running:
-        # poll for events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            elif event.type == pygame.MOUSEMOTION:
-                event_manager.mouse_x = pygame.mouse.get_pos()[0]
-                event_manager.mouse_y = pygame.mouse.get_pos()[1]
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == pygame.BUTTON_LEFT:
-                    event_manager.left_down = True
-
-        # RENDER
-
-        screen.fill(WHITE)
-
+    def render(self, screen):
+        screen.fill((255, 255, 255)) # white background
         # grid
-        for i in range(1, NUM_SQUARES):
-            pygame.draw.line(screen, BLACK, (SCREEN_SIZE * i // NUM_SQUARES,                              0), (SCREEN_SIZE * i // NUM_SQUARES,                    SCREEN_SIZE))
-            pygame.draw.line(screen, BLACK, (                             0, SCREEN_SIZE * i // NUM_SQUARES), (                   SCREEN_SIZE, SCREEN_SIZE * i // NUM_SQUARES))
-        
-        if event_manager.left_down:
-            x = event_manager.mouse_x // (SCREEN_SIZE // NUM_SQUARES)
-            y = event_manager.mouse_y // (SCREEN_SIZE // NUM_SQUARES)
-            board[y][x] = CURRENT_TURN
-            event_manager.left_down = False
+        for i in range(1, 10):
+            pygame.draw.line(screen, (0, 0, 0), (SCREEN_SIZE * i // 10, 0), (SCREEN_SIZE * i // 10, SCREEN_SIZE)) # vertical lines
+            pygame.draw.line(screen, (0, 0, 0), (0, SCREEN_SIZE * i // 10), (SCREEN_SIZE, SCREEN_SIZE * i // 10)) # horizontal lines
 
-            print(board)
+        if self.event_manager.left_down:
+            x = self.event_manager.mouse_x // (SCREEN_SIZE // NUM_SQUARES)
+            y = self.event_manager.mouse_y // (SCREEN_SIZE // NUM_SQUARES)
+            self.board[y][x] = self.current_turn
+            self.event_manager.left_down = False
+
+            print(self.board)
         
         pygame.display.flip()
-
-        clock.tick(60)  # limits FPS to 60
-    
-    pygame.quit()
-
-if __name__ == "__main__":
-    main()

@@ -5,9 +5,10 @@ from utils.Colors import Colors
 
 class State:
     # default is menu state
-    def __init__(self, player1, player2):
+    def __init__(self, player1, player2, event_manager):
         self.players = [player1, player2]
         self.current_turn = 0
+        self.event_manager = event_manager
 
     def update(self):
         pass

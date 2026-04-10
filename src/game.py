@@ -1,10 +1,10 @@
 import pygame
 import numpy as np
-from games.State import State
+from src.UI.State import State
 
 class Renderer:
-    def __init__(self, player1, player2):
-        self.menu_state = State(player1, player2)
+    def __init__(self, player1, player2, event_manager):
+        self.menu_state = State(player1, player2, event_manager)
 
         self.current_game = self.menu_state
 
