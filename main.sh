@@ -1,11 +1,22 @@
 #!/bin/bash
 
-if [[ ! -d venv ]]
+if [[ ! -f venv/bin/activate || ! -f venv/bin/python || ! -f venv/bin/pip ]]
 then
+    rm -rf venv
     python3 -m venv venv
 fi
 
 source venv/bin/activate
+
+if [ ! -d venv/lib/python*/site-packages/numpy ]
+then
+    pip install numpy
+fi
+
+if [ ! -d venv/lib/python*/site-packages/pygame ]
+then
+    pip install pygame
+fi
 
 hash() {
     printf "%s" "$1" | sha256sum | awk '{print $1}'
@@ -16,7 +27,7 @@ register() {
     local sha_user
     sha_user=$(hash "$username")
 
-    echo "User not found. Do you want to register? (y/n)"
+    echo "User not found. Do you want to register? (y/n)" >&2
     read -r choice
 
     if [[ "$choice" != "y" ]]
@@ -25,10 +36,12 @@ register() {
     fi
 
     local password confirm
-    read -sp "Enter new password: " password
-    echo
-    read -sp "Confirm password: " confirm
-    echo
+    printf "Enter new password: " >&2
+    read -sr password
+    printf "\n" >&2
+    printf "Confirm password: " >&2
+    read -sr confirm
+    printf "\n" >&2
 
     if [[ "$password" != "$confirm" ]]
     then
@@ -49,10 +62,15 @@ register() {
 
 login() {
     local username
-    read -p "Enter username: " username
+    printf "Enter username: " >&2
+    read -r username
+
+    # Hashing username
 
     local sha_user
     sha_user=$(hash "$username")
+
+    # Checking user in database
 
     local found=0
     local stored_user stored_pass
@@ -64,26 +82,29 @@ login() {
             found=1
             break
         fi
-    done < users.tsv
+    done < data/users.tsv
+
+    # User check complete
 
     if [[ $found -eq 0 ]]
     then
         register "$username" || return 1
     else
         local password
-        read -sp "Enter password: " password
-        echo
+        printf "Enter password: " >&2
+        read -sr password
+        printf "\n" >&2
 
         local sha_pass
         sha_pass=$(hash "$password")
 
         if [[ "$sha_pass" != "$stored_pass" ]]
         then
-            echo "Incorrect Password!!!"
+            echo "Incorrect Password!!!" >&2
             return 1
         fi
 
-        echo "Login successful!!"
+        echo "Login successful!!" >&2
     fi
 
     echo "$username:$sha_user"
@@ -107,4 +128,4 @@ fi
 
 echo "Both users authenticated successfully!"
 
-python3 game.py "$user1" "$user2
+python3 src/main.py "$user1" "$user2"
