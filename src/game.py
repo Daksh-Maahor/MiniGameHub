@@ -164,8 +164,9 @@ def main():
             show_message(screen, font, "Othello is coming soon!")
             continue
         elif choice == "tictactoe":
-            show_message(screen, font, "TicTacToe is coming soon!")
-            continue
+            from games.tictactoe import TicTacToe
+            game = TicTacToe(player1, player2)
+            run_game(screen, game, bg)
         elif choice == "leaderboard":
             show_message(screen, font, "Leaderboard not yet implemented.")
             continue
