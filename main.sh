@@ -53,7 +53,7 @@ register() {
     sha_pass=$(hash "$password")
 
     # Append to database
-    echo -e "${sha_user}\t${sha_pass}" >> users.tsv
+    echo -e "${sha_user}\t${sha_pass}" >> data/users.tsv
 
     echo "Registration successful!"
     echo "$sha_user"
