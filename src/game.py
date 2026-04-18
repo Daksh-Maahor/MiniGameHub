@@ -25,19 +25,15 @@ def show_intro(screen, bg):
     prompt = font_small.render("Press any key to start", True, (200, 200, 200))
 
     alpha = 0
-
     running = True
     while running:
         screen.blit(bg, (0, 0))
-
         fade = pygame.Surface((width, height))
         fade.fill((0, 0, 0))
         fade.set_alpha(255 - alpha)
         screen.blit(fade, (0, 0))
-
         screen.blit(title, (width//2 - title.get_width()//2, height//3))
         screen.blit(prompt, (width//2 - prompt.get_width()//2, height//2))
-
         pygame.display.flip()
 
         if alpha < 255:
@@ -47,47 +43,62 @@ def show_intro(screen, bg):
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-
             if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONDOWN:
                 return
 
         clock.tick(60)
 
+
+def draw_button(screen, text, font, rect, base_color, hover_color):
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+
+    if rect.collidepoint(mouse):
+        glow_rect = rect.inflate(20, 20)
+        pygame.draw.rect(screen, hover_color, glow_rect, border_radius=30)
+        if click[0]:
+            pygame.time.delay(200)
+            return True
+    else:
+        pygame.draw.rect(screen, base_color, rect, border_radius=25)
+
+    txt = font.render(text, True, (255, 255, 255))
+    screen.blit(txt, (rect.x + rect.width//2 - txt.get_width()//2, rect.y + rect.height//2 - txt.get_height()//2))
+    return False
+
 def show_menu(screen, font, bg):
     width, height = screen.get_size()
+    title_font = pygame.font.SysFont("Arial", 140)
+    btn_font = pygame.font.SysFont("Lora", 50)
+
     while True:
         screen.blit(bg, (0, 0))
-        title = font.render("Game Hub", True, (255, 255, 255))
+        title = title_font.render("GAME HUB", True, (255, 255, 255))
         screen.blit(title, (width//2 - title.get_width()//2, height//10))
-        font1 = pygame.font.SysFont("Lora", 60)
-        options=[
-            "1-Connect4",
-            "2-Othello",
-            "3-TicTacToe",
-            "Esc-Exit"
-        ]
-        for i in range (0,4):
-            if (i != 3):
-                op=font1.render(options[i], True, (0, 0, 255))
-            else:
-                op=font1.render(options[i], True, (255, 0, 0))
-            screen.blit(op, (width//2 - op.get_width()//2, height//3 + i*80))
+        start_y = height // 3
+        gap = 80
+        
+        if draw_button(screen, "Connect4", btn_font, pygame.Rect(width//2 - 200, start_y, 400, 60),(60, 30, 140), (140, 80, 255)):
+            return "connect4"
+        if draw_button(screen, "Othello", btn_font, pygame.Rect(width//2 - 200, start_y + gap, 400, 60),(60, 30, 140), (140, 80, 255)):
+            return "othello"
+        if draw_button(screen, "TicTacToe", btn_font, pygame.Rect(width//2 - 200, start_y + 2*gap, 400, 60),(60, 30, 140), (140, 80, 255)):
+            return "tictactoe"
+        if draw_button(screen, "Leaderboard", btn_font, pygame.Rect(width//2 - 200, start_y + 3*gap, 400, 60), (30, 60, 120), (80, 180, 255)):
+            return "leaderboard"
+        if draw_button(screen, "Chart", btn_font, pygame.Rect(width//2 - 200, start_y + 4*gap, 400, 60), (30, 60, 120), (80, 180, 255)):
+            return "chart"
+        if draw_button(screen, "How to Play", btn_font, pygame.Rect(width//2 - 200, start_y + 5*gap, 400, 60), (30, 60, 120), (80, 180, 255)):
+            return "howtoplay"
+        if draw_button(screen, "Exit", btn_font, pygame.Rect(width//2 - 200, start_y + 6*gap, 400, 60), (120, 20, 40), (255, 80, 120)):
+            pygame.quit()
+            sys.exit()
 
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_1:
-                    return "connect4"
-                elif event.key == pygame.K_2:
-                    return "othello"
-                elif event.key == pygame.K_3:
-                    return "tictactoe"
-                elif event.key == pygame.K_ESCAPE:
-                    pygame.quit()
-                    sys.exit()
 
 def run_game(screen, game, bg):
     clock = pygame.time.Clock()
@@ -127,7 +138,7 @@ def main():
     bg = pygame.transform.scale(bg, (width, height))
     show_intro(screen, bg)
     pygame.display.set_caption("Mini Game Hub")
-    font = pygame.font.SysFont("Arial", 80)
+    font = pygame.font.SysFont("Arial", 140)
     while True:
         choice = show_menu(screen, font, bg)
         if choice == "connect4":
