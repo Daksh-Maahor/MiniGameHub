@@ -7,7 +7,7 @@ ROWS = 10
 COLS = 10
 CELL_SIZE = 70
 
-def draw_ui_button(screen, text, rect, base_color, hover_color, font):
+def draw_button(screen, text, rect, base_color, hover_color, font):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
@@ -105,9 +105,9 @@ class TicTacToe(BoardGame):
         screen.blit(txt2, (right_x - txt2.get_width() // 2, center_y))
 
         btn_font = pygame.font.SysFont("Arial", 30)
-        if draw_ui_button(screen, "Back", pygame.Rect(20, 20, 150, 70), (60, 60, 120), (120, 120, 255), btn_font):
+        if draw_button(screen, "Back", pygame.Rect(20, 20, 150, 70), (60, 60, 120), (120, 120, 255), btn_font):
             return "menu"
-        if draw_ui_button(screen, "Exit", pygame.Rect(width - 170, 20, 150, 70), (120, 40, 60), (255, 80, 120), btn_font):
+        if draw_button(screen, "Exit", pygame.Rect(width - 170, 20, 150, 70), (120, 40, 60), (255, 80, 120), btn_font):
             pygame.quit()
             sys.exit()
 

@@ -7,7 +7,7 @@ ROWS = 7
 COLS = 7
 CELL_SIZE = 100
 
-def draw_ui_button(screen, text, rect, base_color, hover_color, font):
+def draw_button(screen, text, rect, base_color, hover_color, font):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
@@ -98,9 +98,9 @@ class Connect4(BoardGame):
         screen.blit(turn_render, (width//2 - turn_render.get_width()//2, OFFSET_Y - 80))
 
         btn_font = pygame.font.SysFont("Arial", 30)
-        if draw_ui_button(screen, "Back", pygame.Rect(20, 20, 150, 70), (60, 60, 120), (120, 120, 255), btn_font):
+        if draw_button(screen, "Back", pygame.Rect(20, 20, 150, 70), (60, 60, 120), (120, 120, 255), btn_font):
             return "menu"
-        if draw_ui_button(screen, "Exit", pygame.Rect(width - 170, 20, 150, 70), (120, 40, 60), (255, 80, 120), btn_font):
+        if draw_button(screen, "Exit", pygame.Rect(width - 170, 20, 150, 70), (120, 40, 60), (255, 80, 120), btn_font):
             pygame.quit()
             sys.exit()
 

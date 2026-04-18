@@ -111,7 +111,7 @@ def show_menu(screen, font, bg):
 
 def run_game(screen, game, bg):
     clock = pygame.time.Clock()
-    font = pygame.font.Font(None, 36)
+    font = pygame.font.Font(None, 150)
     while True:
         screen.blit(bg, (0, 0))
         result = game.draw_screen(screen)
@@ -133,11 +133,12 @@ def run_game(screen, game, bg):
 
 def show_result(screen, font, winner):
     screen.fill((0, 0, 0))
-    text = "Draw!" if winner == "Draw" else f"{winner} Wins!"
+    width, height = screen.get_size()
+    text = "Draw!" if winner == "Draw" else f"{winner} Wins!!"
     final = font.render(text, True, (255, 255, 255))
-    screen.blit(final, (200, 250))
+    screen.blit(final, (width//2 - final.get_width()//2, height//2 - final.get_height()//2))
     pygame.display.flip()
-    pygame.time.wait(4000)
+    pygame.time.wait(3000)
 
 def main():
     player1 = sys.argv[1]
@@ -174,7 +175,7 @@ def main():
             show_message(screen, font, "Charting not yet available.")
             continue
         elif choice == "howtoplay":
-            show_message(screen, font, "Use mouse click to play Connect4.")
+            show_message(screen, font, "Not written yet")
             continue
         else:
             continue
