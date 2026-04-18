@@ -171,7 +171,3 @@ def main():
             continue
         else:
             continue
-
-
-if __name__ == "__main__":
-    main()
