@@ -148,7 +148,11 @@ def main():
     show_intro(screen, bg)
     pygame.display.set_caption("Mini Game Hub")
     font = pygame.font.SysFont("Arial", 140)
-    while True:
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
         choice = show_menu(screen, font, bg)
         if choice == "connect4":
             from games.connect4 import Connect4
