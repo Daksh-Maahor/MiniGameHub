@@ -114,7 +114,9 @@ def run_game(screen, game, bg):
     font = pygame.font.Font(None, 36)
     while True:
         screen.blit(bg, (0, 0))
-        game.draw_screen(screen)
+        result = game.draw_screen(screen)
+        if result == "menu":
+            return
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
