@@ -5,7 +5,7 @@ from game import BoardGame
 
 ROWS = 10
 COLS = 10
-CELL_SIZE = 70
+CELL_SIZE = 84
 
 def draw_button(screen, text, rect, base_color, hover_color, font):
     mouse = pygame.mouse.get_pos()

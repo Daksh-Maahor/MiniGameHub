@@ -146,7 +146,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     width, height = screen.get_size()
-    bg = pygame.image.load("../finalbackground.png")
+    bg = pygame.image.load("finalbackground.png")
     bg = pygame.transform.scale(bg, (width, height))
     show_intro(screen, bg)
     pygame.display.set_caption("Mini Game Hub")
@@ -162,8 +162,9 @@ def main():
             game = Connect4(player1, player2)
             run_game(screen, game, bg)
         elif choice == "othello":
-            show_message(screen, font, "Othello is coming soon!")
-            continue
+            from games.othello import Othello
+            game = Othello(player1, player2)
+            run_game(screen, game, bg)
         elif choice == "tictactoe":
             from games.tictactoe import TicTacToe
             game = TicTacToe(player1, player2)
