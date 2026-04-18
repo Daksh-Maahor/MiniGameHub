@@ -66,6 +66,15 @@ def draw_button(screen, text, font, rect, base_color, hover_color):
     screen.blit(txt, (rect.x + rect.width//2 - txt.get_width()//2, rect.y + rect.height//2 - txt.get_height()//2))
     return False
 
+def show_message(screen, font, text, duration=2000):
+    width, height = screen.get_size()
+    screen.fill((0, 0, 0))
+    msg = font.render(text, True, (255, 255, 255))
+    screen.blit(msg, (width//2 - msg.get_width()//2, height//2 - msg.get_height()//2))
+    pygame.display.flip()
+    pygame.time.wait(duration)
+
+
 def show_menu(screen, font, bg):
     width, height = screen.get_size()
     title_font = pygame.font.SysFont("Arial", 140)
@@ -144,16 +153,24 @@ def main():
         if choice == "connect4":
             from games.connect4 import Connect4
             game = Connect4(player1, player2)
+            run_game(screen, game, bg)
         elif choice == "othello":
-            from games.othello import Othello
-            game = Othello(player1, player2)
+            show_message(screen, font, "Othello is coming soon!")
+            continue
         elif choice == "tictactoe":
-            from games.tictactoe import TicTacToe
-            game = TicTacToe(player1, player2)
+            show_message(screen, font, "TicTacToe is coming soon!")
+            continue
+        elif choice == "leaderboard":
+            show_message(screen, font, "Leaderboard not yet implemented.")
+            continue
+        elif choice == "chart":
+            show_message(screen, font, "Charting not yet available.")
+            continue
+        elif choice == "howtoplay":
+            show_message(screen, font, "Use mouse click to play Connect4.")
+            continue
         else:
             continue
-
-        run_game(screen, game, bg)
 
 
 if __name__ == "__main__":
