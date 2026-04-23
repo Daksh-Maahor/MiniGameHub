@@ -111,7 +111,7 @@ def show_menu(screen, font, bg):
 
 def run_game(screen, game, bg):
     clock = pygame.time.Clock()
-    font = pygame.font.Font(None, 150)
+    font = pygame.font.Font(None, 36)
     while True:
         screen.blit(bg, (0, 0))
         result = game.draw_screen(screen)
@@ -133,12 +133,11 @@ def run_game(screen, game, bg):
 
 def show_result(screen, font, winner):
     screen.fill((0, 0, 0))
-    width, height = screen.get_size()
-    text = "Draw!" if winner == "Draw" else f"{winner} Wins!!"
+    text = "Draw!" if winner == "Draw" else f"{winner} Wins!"
     final = font.render(text, True, (255, 255, 255))
-    screen.blit(final, (width//2 - final.get_width()//2, height//2 - final.get_height()//2))
+    screen.blit(final, (200, 250))
     pygame.display.flip()
-    pygame.time.wait(3000)
+    pygame.time.wait(4000)
 
 def main():
     player1 = sys.argv[1]
@@ -162,13 +161,11 @@ def main():
             game = Connect4(player1, player2)
             run_game(screen, game, bg)
         elif choice == "othello":
-            from games.othello import Othello
-            game = Othello(player1, player2)
-            run_game(screen, game, bg)
+            show_message(screen, font, "Othello is coming soon!")
+            continue
         elif choice == "tictactoe":
-            from games.tictactoe import TicTacToe
-            game = TicTacToe(player1, player2)
-            run_game(screen, game, bg)
+            show_message(screen, font, "TicTacToe is coming soon!")
+            continue
         elif choice == "leaderboard":
             show_message(screen, font, "Leaderboard not yet implemented.")
             continue
@@ -176,7 +173,7 @@ def main():
             show_message(screen, font, "Charting not yet available.")
             continue
         elif choice == "howtoplay":
-            show_message(screen, font, "Not written yet")
+            show_message(screen, font, "Use mouse click to play Connect4.")
             continue
         else:
             continue
