@@ -145,7 +145,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     width, height = screen.get_size()
-    bg = pygame.image.load("../finalbackground.png")
+    bg = pygame.image.load("finalbackground.png")
     bg = pygame.transform.scale(bg, (width, height))
     show_intro(screen, bg)
     pygame.display.set_caption("Mini Game Hub")
