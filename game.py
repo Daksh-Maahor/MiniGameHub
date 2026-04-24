@@ -8,12 +8,11 @@ import subprocess
 from pathlib import Path
 from src.utils.Settings import *
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parent
 HISTORY_PATH = ROOT_DIR / "data" / "history.csv"
 LEADERBOARD_SCRIPT = ROOT_DIR / "leaderboard.sh"
 CHART_SCRIPT = ROOT_DIR / "chart.py"
 BG_PATH = ROOT_DIR / "finalbackground.png"
-
 
 def show_intro(screen, bg):
     clock = pygame.time.Clock()
@@ -208,6 +207,7 @@ def run_game(screen, game, bg, game_name):
     clock = pygame.time.Clock()
     font = pygame.font.Font(None, 36)
     while True:
+        screen.blit(bg, (0, 0))
         events = pygame.event.get()
         result = game.draw_screen(screen, events)
         if result == "menu":
@@ -222,7 +222,7 @@ def run_game(screen, game, bg, game_name):
                 game.handle_click(x, y)
                 winner = game.check_win()
                 if winner:
-                    # save to history.csv
+                    # Log to history.csv
                     date = str(datetime.date.today())
                     if winner == "Draw":
                         winner_name = "Draw"
@@ -310,7 +310,7 @@ def game_main(player1, player2):
 
 def main():
     if len(sys.argv) != 3:
-        print("Usage: python3  <player1> <player2>")
+        print("Usage: python3 game.py <player1> <player2>")
         sys.exit(1)
 
     game_main(sys.argv[1], sys.argv[2])

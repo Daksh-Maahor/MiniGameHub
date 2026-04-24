@@ -1,7 +1,7 @@
 import pygame
 
-from UI.UIElements import Button
-from utils.Colors import *
+from src.UI.UIElements import Button
+from src.utils.Colors import *
 
 class State:
     def __init__(self, player1, player2, event_manager):
