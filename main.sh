@@ -258,3 +258,4 @@ fi
 
 printf "%b" "${GREEN}\nBoth users authenticated successfully! Launching the game...${RESET}\n\n"
 python3 src/game.py "$user1" "$user2"
+
