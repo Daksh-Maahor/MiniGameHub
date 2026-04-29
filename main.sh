@@ -92,19 +92,19 @@ ensure_data_file_exists() {
 
 prepare_venv() {
     if [[ ! -f venv/bin/activate || ! -f venv/bin/python || ! -f venv/bin/pip ]]; then
-        printf "%b" "${CYAN}Setting up virtual environment...${RESET}\n"
+        printf "%b" "${CYAN}Setting up virtual environment...${RESET}\n" > /dev/null
         rm -rf venv
-        python3 -m venv venv
+        python3 -m venv venv > /dev/null
     fi
-    source venv/bin/activate
+    source venv/bin/activate > /dev/null
 }
 
 install_dependency() {
     local package="$1"
     # Use the virtual environment's Python to test for package availability.
     if ! python -c "import ${package}" >/dev/null 2>&1; then
-        printf "%b" "${CYAN}Installing ${package}...${RESET}\n"
-        pip install "${package}"
+        printf "%b" "${CYAN}Installing ${package}...${RESET}\n" > /dev/null
+        pip install "${package}" > /dev/null
     fi
 }
 
