@@ -15,7 +15,4 @@ clean:
 cleanall: clean
 	rm -f $(TARGET).pdf
 
-view: $(TARGET).pdf
-	xdg-open $(TARGET).pdf &
-
 .PHONY: all clean cleanall view
