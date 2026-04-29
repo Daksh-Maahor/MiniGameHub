@@ -1,32 +1,62 @@
 # MINI GAME HUB
-This project is created by **Rujul-garg(25B0937)** and **Daksh-Maahor(25B0974)**.
+This project is created by and **Daksh Maahor (25B0974)** and **Rujul Garg (25B0937)**.
 
-We built a secure, multi-user game hub that integrates Bash scripting for authentication and Python(Pygame) for gameplay. Two authenticated players select a game from a menu, play via a graphical interface, and have their results recorded on a persistent leaderboard.
+Mini Gae Hub is a two-player game launcher that uses Bash scripting for login/authentication and Pygame for the graphical game experience. Authenticated players can select a game, compete, and have their results persisted to a leaderboard.
 
-## How to Run
+## Requirements
 
-- Navigate to the project directory:  
-`cd hub`
+- Python 3.11+ (or compatible)
+- `pygame`
+- `numpy`
+- `matplotlib`
 
-- Start the program:  
-`bash main.sh`
+## Setup and Run
 
-## Usage
+From the repository root:
 
-- Enter two usernames and passwords.
-- Register if the user does not exist.
-- Once both players are authenticated, call game.py with both usernames as command-line arguments:
-`python3 game.py <username1> <username2>`
+```bash
+bash main.sh
+```
 
-## Playing
+This script will:
 
-- Select a game from the menu.
-- Play using the GUI window.
-- Results are saved automatically.
+- create a Python virtual environment under `venv/`
+- install any missing Python packages
+- create the data directory and persistence files under `data/`
+- prompt both players to log in or register
+- launch the Pygame hub once both players are authenticated
 
-## After Each Game
+## Authentication
 
-- Leaderboard is shown in terminal.
-- Graphs are displayed.
-- Choose to play again or exit.
+- User credentials are stored in `data/users.tsv`.
+- Game results are stored in `data/history.csv`.
+- Each username is hashed before storage so the raw password is never saved.
+
+## Gameplay
+
+Once the game hub opens, choose one of the available games:
+
+- `Connect4`
+- `Othello`
+- `TicTacToe`
+
+After a game finishes:
+
+- the result is appended to `data/history.csv`
+- `leaderboard.sh` is run to show the terminal leaderboard
+- `src/chart.py` is launched to display charts
+
+## Manual Run
+
+If you want to run the game GUI manually after successful authentication:
+
+```bash
+python3 src/game.py <username1> <username2>
+```
+
+## Notes
+
+- The `data/` folder contains user and history files.
+- Use only ASCII letters, digits, spaces, `.`, `_`, and `-` for usernames.
+- If the game window cannot load the background image, it falls back to a generated gradient.
 
