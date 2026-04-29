@@ -46,12 +46,14 @@ After a game finishes:
 - `leaderboard.sh` is run to show the terminal leaderboard
 - `src/chart.py` is launched to display charts
 
-## Manual Run
+## Report
 
-If you want to run the game GUI manually after successful authentication:
+The `report/` folder contains the `main.tex` file containing the code for the Project Report.
+
+To compile the report, from the `report/` folder run the command
 
 ```bash
-python3 src/game.py <username1> <username2>
+make
 ```
 
 ## Notes

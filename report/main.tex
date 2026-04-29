@@ -67,16 +67,6 @@ This script also:
     \item launches the game GUI using \texttt{src/game.py}
 \end{itemize}
 
-\subsection{Manual Launch}
-
-After authentication, the application may also be run directly with two player names:
-
-\begin{verbatim}
-python3 src/game.py <username1> <username2>
-\end{verbatim}
-
-When using the direct Python entry point, the same dependencies from \texttt{requirements.txt} must be installed in the active environment.
-
 \section{Code Structure}
 
 The project files are organized to keep UI, game logic, utilities, and scripts separate.
@@ -107,6 +97,93 @@ The project files are organized to keep UI, game logic, utilities, and scripts s
     \item \texttt{src/games/othello.py}: Othello/Reversi implementation. It handles move validation, disc flips, valid-move highlighting, and endgame scoring.
     \item \texttt{src/games/tictactoe.py}: Extended Tic-Tac-Toe on a 10x10 board. It requires five in a row to win and uses sliding-window logic for efficient win detection.
 \end{itemize}
+
+\section{System Workflow and Operation}
+
+This section describes how Mini Game Hub operates from initialization to displaying post-game statistics.
+
+\subsection{Initialization and Authentication}
+
+When a user executes \texttt{bash main.sh} from the repository root, the following sequence occurs:
+
+\begin{enumerate}
+    \item The \texttt{main.sh} script checks for the existence of the \texttt{venv/} directory. If it does not exist, a Python virtual environment is created using \texttt{python3 -m venv venv}.
+    \item The script compares installed packages in the virtual environment against \texttt{requirements.txt}. Any missing packages are installed via \texttt{pip}.
+    \item The script verifies that the persistent data directory \texttt{data/} exists. If not, it is created alongside placeholder files \texttt{users.tsv} (with column headers) and \texttt{history.csv} (empty or with header row).
+    \item The script then enters an interactive authentication loop, prompting Player 1 to either log in with an existing username/password or register a new account.
+    \item Credentials are validated by hashing the input password with SHA-256 and comparing it against the stored hash in \texttt{data/users.tsv}.
+    \item Once Player 1 is authenticated, the script prompts Player 2 similarly, ensuring that the same user cannot log in twice for a single session.
+    \item After both players authenticate successfully, the script executes \texttt{python3 src/game.py <player1\_username> <player2\_username>}.
+\end{enumerate}
+
+\subsection{Main Menu and Game Selection}
+
+Upon execution, \texttt{src/game.py} initializes the Pygame window using constants defined in \texttt{src/utils/Settings.py}. The application displays a fade-in welcome screen featuring ``Welcome to MiniGameHub'', which persists until the user presses any key or clicks the mouse. After the welcome screen, the main menu appears with the following options:
+
+\begin{itemize}
+    \item \textbf{Play Connect Four}: Launches a new Connect Four game.
+    \item \textbf{Play Othello}: Launches a new Othello game.
+    \item \textbf{Play Tic-Tac-Toe}: Launches an extended Tic-Tac-Toe game (10x10 grid with five-in-a-row win condition).
+    \item \textbf{View Leaderboard}: Displays cumulative player statistics by invoking the \texttt{leaderboard.sh} script in a subprocess.
+    \item \textbf{View Help}: Shows an on-screen help card with game descriptions and controls.
+    \item \textbf{Exit}: Closes the application.
+\end{itemize}
+
+The menu is rendered using Pygame surfaces and font objects, with mouse click event detection determining which option the player selected.
+
+\subsection{Game Execution Flow}
+
+When a player selects a game, the corresponding game class is instantiated (e.g., \texttt{Connect4}, \texttt{Othello}, or \texttt{TicTacToe}). Each game class extends \texttt{BoardGame}, inheriting turn management and player name tracking. The game loop then:
+
+\begin{enumerate}
+    \item Initializes the board representation (typically a NumPy array of dimensions rows × cols).
+    \item Renders the board to the Pygame window, including pieces already placed and any highlighting (e.g., valid moves in Othello, hover previews in Tic-Tac-Toe).
+    \item Displays the current player's username and turn indicator.
+    \item Waits for a mouse click or keyboard event from the active player.
+    \item Translates the pixel coordinates of the click to board coordinates and attempts to execute the move.
+    \item Validates the move according to the game's rules (e.g., checking for valid captures in Othello, preventing overlapping moves in Tic-Tac-Toe).
+    \item If valid, updates the board state, calling any game-specific logic (e.g., disc flips in Othello).
+    \item Switches the active player to the other player.
+    \item Checks for a win condition or draw by invoking \texttt{check\_win()}.
+    \item If the game continues, returns to the rendering step.
+\end{enumerate}
+
+\subsubsection{Game-Specific Mechanics}
+
+\begin{itemize}
+    \item \textbf{Connect Four:} The board is 7 rows × 7 columns. Pieces are dropped into columns and fall to the lowest available row. The game is won when a player places four consecutive pieces horizontally, vertically, or diagonally. If all cells are filled with no winner, the game ends in a draw.
+    \item \textbf{Othello:} The board is 8×8 with standard Othello starting position (two black and two white discs in the center). A move is valid only if it captures at least one opponent disc with the newly placed disc and a continuous line of opponent discs. Discs are flipped when captured. If no valid moves exist for the current player, the turn passes to the opponent. The game ends when neither player can move; the player with more discs wins, or a draw occurs if counts are equal.
+    \item \textbf{Tic-Tac-Toe:} The board is 10×10. Players place either ``X'' or ``O'' marks. A player wins by achieving five consecutive marks (horizontally, vertically, or diagonally). The game uses NumPy's sliding-window view to efficiently detect winning sequences. The game ends in a draw if all cells are filled without a winner.
+\end{itemize}
+
+\subsection{Result Recording and Post-Game Display}
+
+Upon game completion, the following sequence occurs:
+
+\begin{enumerate}
+    \item The game result (winner or ``Draw'') is formatted and appended to \texttt{data/history.csv} as a new row with: timestamp, player 1 name, player 2 name, game type, and result.
+    \item The application displays a result screen showing the winner/draw message and any final board state.
+    \item The application automatically invokes \texttt{leaderboard.sh} as a subprocess to display an up-to-date terminal leaderboard showing cumulative wins, losses, and draw counts.
+    \item Next, the application invokes \texttt{src/chart.py} to generate Matplotlib figures from \texttt{data/history.csv}:
+    \begin{itemize}
+        \item A bar chart showing each player's total wins.
+        \item A pie or bar chart showing the popularity of each game mode.
+        \item A line chart showing each player's win rate over time.
+    \end{itemize}
+    \item The charts are displayed in a Matplotlib window for visual inspection.
+    \item The user is prompted to return to the main menu or exit the application.
+\end{enumerate}
+
+\subsection{Data Persistence}
+
+All authentication and gameplay data is persisted to CSV files in the \texttt{data/} directory:
+
+\begin{itemize}
+    \item \texttt{data/users.tsv}: Tab-separated file with columns: \texttt{username}, \texttt{password\_hash}. Passwords are hashed with SHA-256 to prevent plaintext storage.
+    \item \texttt{data/history.csv}: Comma-separated file with columns: \texttt{timestamp}, \texttt{player1}, \texttt{player2}, \texttt{game\_type}, \texttt{result\_winner}. Each row represents one completed game.
+\end{itemize}
+
+The \texttt{leaderboard.sh} script parses \texttt{history.csv} to compute aggregate statistics (wins, losses, draws) for each player, while \texttt{src/chart.py} uses the same file to generate visualizations.
 
 \section{Detailed Module Responsibilities}
 
@@ -139,6 +216,114 @@ Each game class extends \texttt{BoardGame} and implements its own board renderin
     \item \texttt{Connect4}: stores a 7x7 board and checks horizontal, vertical, and diagonal winning sequences.
     \item \texttt{Othello}: initializes the standard starting layout, computes valid captures in eight directions, and flips opponent discs.
     \item \texttt{TicTacToe}: draws a 10x10 grid, highlights hover previews, and uses NumPy sliding-window views to detect five consecutive marks.
+\end{itemize}
+
+\section{Major Functions and API}
+
+This section documents the key functions exposed by each module, their parameters, and responsibilities.
+
+\subsection{\texttt{src/game.py} — Main Application Entry Point}
+
+\begin{itemize}
+    \item \textbf{\texttt{main()}}: Entry point that initializes Pygame, loads the background image, displays the welcome intro, and enters the main menu loop. Parses command-line arguments for player usernames.
+    
+    \item \textbf{\texttt{game\_main(player1, player2)}}: Core application orchestrator. Initializes the Pygame window, manages the game loop for the main menu, and coordinates transitions between game selection, gameplay, result display, and statistics.
+    
+    \item \textbf{\texttt{show\_intro(screen, bg)}}: Displays the fade-in welcome splash screen with the title ``Welcome to MiniGameHub''. Polls for keyboard or mouse input to proceed.
+    
+    \item \textbf{\texttt{show\_menu(screen, font, bg)}}: Renders the main menu with six interactive cards (Connect Four, Othello, Tic-Tac-Toe, Leaderboard, How to Play, Exit). Returns the selected action key and handles card hover effects, shadows, and custom icon drawing.
+    
+    \item \textbf{\texttt{show\_how\_to\_play(screen, bg)}}: Displays the help card UI with game descriptions, rules, and controls. Renders mini board visualizations for each game mode and provides navigation back to the main menu.
+    
+    \item \textbf{\texttt{show\_result(screen, font, winner)}}: Shows the game result (winner or draw) and displays the final board state. Prompts the user to continue or exit.
+    
+    \item \textbf{\texttt{run\_game(screen, game, bg, game\_name)}}: Main game loop for active gameplay. Handles event polling, calls the game's \texttt{draw\_screen()} and \texttt{handle\_click()}, and monitors for win/draw conditions. Calls \texttt{check\_win()} repeatedly until the game terminates.
+    
+    \item \textbf{\texttt{show\_leaderboard\_menu(screen, font, bg)}}: Invokes the \texttt{leaderboard.sh} script as a subprocess to display terminal-based player statistics.
+    
+    \item \textbf{\texttt{show\_message(screen, font, text, duration)}}: Displays a temporary status message (default 2 seconds) for feedback like ``Invalid move'' or connection status.
+    
+    \item \textbf{\texttt{draw\_button(screen, text, font, rect, base\_color, hover\_color, events)}}: Utility that renders a clickable button with shadow, hover effect, and border highlight. Returns \texttt{True} when clicked.
+    
+    \item \textbf{\texttt{\_clean\_player\_name(name)}}: Removes non-printable and non-ASCII characters from usernames to prevent display corruption.
+    
+    \item \textbf{\texttt{\_wrap\_text(text, font, max\_width)}}: Splits text into multiple lines to fit within a pixel width, used for multi-line help text and descriptions.
+    
+    \item \textbf{\texttt{\_draw\_mini\_board\_connect4(), \_draw\_mini\_board\_othello(), \_draw\_mini\_board\_tictactoe()}}: Helper functions that render small, decorative board previews within help or menu cards. Used for visual presentation without full gameplay.
+\end{itemize}
+
+\subsection{\texttt{src/games/BoardGame.py} — Base Game Class}
+
+\begin{itemize}
+    \item \textbf{\texttt{\_\_init\_\_(player1, player2, rows, cols)}}: Initializes shared board state, player list, and common attributes like \texttt{current\_turn}, \texttt{last\_move}, and \texttt{win\_cells}.
+    
+    \item \textbf{\texttt{switch\_turn()}}: Toggles \texttt{current\_turn} between 0 (player 1) and 1 (player 2).
+    
+    \item \textbf{\texttt{get\_current\_player()}}: Returns the username of the active player.
+    
+    \item \textbf{\texttt{check\_win()}}: Abstract method (contract). Each game subclass implements rule-specific win detection. Typically returns a player name, ``Draw'', or \texttt{None} (game ongoing).
+\end{itemize}
+
+\subsection{\texttt{src/games/connect4.py} — Connect Four Game}
+
+\begin{itemize}
+    \item \textbf{\texttt{handle\_click(x, y)}}: Translates pixel coordinates to column index. Finds the lowest empty row in that column and places a piece (player 1 or 2). Switches the active player.
+    
+    \item \textbf{\texttt{draw\_screen(screen, events)}}: Renders the 7×6 board grid with colored pieces, a hover preview showing where a piece will land, and a pulsing ring around the last move for visual feedback.
+    
+    \item \textbf{\texttt{check\_win()}}: Scans the board for four consecutive pieces horizontally, vertically, or diagonally. Returns the winner, ``Draw'', or \texttt{None}.
+\end{itemize}
+
+\subsection{\texttt{src/games/othello.py} — Othello/Reversi Game}
+
+\begin{itemize}
+    \item \textbf{\texttt{\_\_init\_\_(p1, p2)}}: Initializes the 8×8 board with the standard Othello starting position: two black and two white discs in the center.
+    
+    \item \textbf{\texttt{\_shift(mask, dr, dc)}}: Vectorized NumPy operation that shifts a boolean mask in a direction (e.g., up-left, down, right-down) by padding with zeros. Enables efficient scanning of board patterns.
+    
+    \item \textbf{\texttt{get\_valid\_moves\_mask(player)}}: Uses NumPy array operations and the \texttt{\_shift()} helper to compute all legal moves for a player in a single pass. Returns a 8×8 boolean mask.
+    
+    \item \textbf{\texttt{is\_valid\_move(row, col, player)}}: Scalar check for a single cell. Returns \texttt{True} if placing the player's disc at (row, col) captures at least one opponent disc.
+    
+    \item \textbf{\texttt{place\_and\_flip(row, col, player)}}: Places a disc and flips all opponent discs in lines bounded by the placed disc and another friendly disc. Updates the board in place.
+    
+    \item \textbf{\texttt{has\_valid\_moves(player)}}: Returns \texttt{True} if the player has at least one legal move. Used to skip turns when a player is blocked.
+    
+    \item \textbf{\texttt{handle\_click(x, y)}}: Validates the clicked cell, calls \texttt{place\_and\_flip()}, and handles turn passing if the next player has no moves.
+    
+    \item \textbf{\texttt{draw\_screen(screen, events)}}: Renders the 8×8 grid with black and white discs, highlights valid moves for the current player, and displays a pass button when necessary.
+    
+    \item \textbf{\texttt{check\_win()}}: Counts discs for each player. Returns the player with more discs, ``Draw'' if equal, or \texttt{None} if the game continues.
+\end{itemize}
+
+\subsection{\texttt{src/games/tictactoe.py} — Extended Tic-Tac-Toe Game}
+
+\begin{itemize}
+    \item \textbf{\texttt{\_\_init\_\_(p1, p2)}}: Initializes the 10×10 board with no starting pieces (empty grid).
+    
+    \item \textbf{\texttt{\_get\_board\_geometry()}}: Computes and caches the board's screen offset and dimensions. Ensures consistent coordinate translation between pixel and board space.
+    
+    \item \textbf{\texttt{\_get\_hover\_cell()}}: Returns the current ((row, col)) under the mouse, or \texttt{None} if outside the board. Used to render hover preview in the next available cell.
+    
+    \item \textbf{\texttt{handle\_click(x, y)}}: Translates pixel coordinates to (row, col). Places the current player's mark (1 for X, 2 for O) if the cell is empty. Switches the active player.
+    
+    \item \textbf{\texttt{draw\_screen(screen, events)}}: Renders the 10×10 grid with X and O marks, a hover preview showing where the current player would place, and highlights winning cells if the game has ended.
+    
+    \item \textbf{\texttt{check\_win()}}: Uses NumPy's \texttt{sliding\_window\_view()} to scan for five consecutive marks horizontally, vertically, or diagonally. Caches winning cell coordinates in \texttt{self.win\_cells} for highlighting. Returns the winner, ``Draw'', or \texttt{None}.
+\end{itemize}
+
+\subsection{\texttt{src/UI/buttons.py} — UI Utilities}
+
+\begin{itemize}
+    \item \textbf{\texttt{draw\_button(screen, text, font, rect, base\_color, hover\_color, events)}}: Renders a button with drop shadow, border highlight (glow on hover), and text. Detects left-mouse click within the button's bounding box and returns \texttt{True} on activation. Used for navigation buttons throughout the UI.
+\end{itemize}
+
+\subsection{\texttt{src/chart.py} — Statistics Visualization}
+
+\begin{itemize}
+    \item \textbf{\texttt{Parse history file}}: Reads \texttt{data/history.csv} and aggregates game results into counters for player wins, game popularity, and per-player game counts.
+    
+    \item \textbf{\texttt{Generate four subplots}}: Uses Matplotlib to create a 2×2 figure showing: (1) top 5 players by wins, (2) game popularity (pie chart), (3) top 5 most active players, and (4) win rates for leading players. Displays the figure in an interactive window.
 \end{itemize}
 
 \section{References}
