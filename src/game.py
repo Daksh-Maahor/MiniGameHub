@@ -17,6 +17,11 @@ LEADERBOARD_SCRIPT = ROOT_DIR / "leaderboard.sh"
 CHART_SCRIPT = ROOT_DIR / "src" / "chart.py"
 BG_PATH = ROOT_DIR / "finalbackground.png"
 
+def _clean_player_name(name: str) -> str:
+    """Remove non-printable and non-ASCII characters from player names."""
+    cleaned = ''.join(ch for ch in name if ch.isprintable() and ord(ch) < 128)
+    return cleaned.strip()
+
 def show_intro(screen, bg):
     """Display the welcome splash screen until the user presses a key or clicks."""
     clock = pygame.time.Clock()
@@ -737,6 +742,8 @@ def show_result(screen, font, winner):
 
 def game_main(player1, player2):
     """Entry point for the game GUI. Initializes Pygame and handles menu navigation."""
+    player1 = _clean_player_name(player1)
+    player2 = _clean_player_name(player2)
     os.environ["SDL_VIDEO_CENTERED"] = "1"
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))

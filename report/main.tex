@@ -19,114 +19,129 @@
 \maketitle
 
 \begin{abstract}
-This report details the implementation of Mini Game Hub, a two-player game launcher built with Python and Pygame. It covers the external libraries used, features implemented, code logic explanations, challenges faced, future improvements, and references.
+This report summarizes the design and implementation of Mini Game Hub, a two-player game launcher built with Python, Pygame, and shell scripting. It includes installation and running instructions, an overview of code structure, design rationale, and references used during development.
 \end{abstract}
 
-\section{External Libraries Used}
+\section{Project Design}
 
-The project utilizes the following external libraries:
-
-\begin{itemize}
-    \item \textbf{Pygame}: A cross-platform set of Python modules designed for writing video games. Used for rendering the graphical user interface, handling user input, and managing the game loop.
-    \item \textbf{NumPy}: A library for the Python programming language, adding support for large, multi-dimensional arrays and matrices, along with a large collection of high-level mathematical functions. Used for efficient board state management and win condition checking in games.
-    \item \textbf{Matplotlib}: A plotting library for Python and its numerical mathematics extension NumPy. Used to generate statistical charts and visualizations for the leaderboard data.
-\end{itemize}
-
-\section{Features Implemented}
-
-The Mini Game Hub includes the following features:
+Mini Game Hub is designed as a modular two-player board game environment with three main responsibilities:
 
 \begin{itemize}
-    \item \textbf{Authentication System}: Secure user login and registration using SHA-256 hashed passwords stored in a TSV file.
-    \item \textbf{Game Menu}: A graphical menu allowing users to select from three games: Connect Four, Othello, and Tic-Tac-Toe.
-    \item \textbf{Game Implementations}: Full implementations of three board games with proper win detection, turn management, and visual feedback.
-    \item \textbf{Leaderboard}: A command-line script that processes game history and displays sorted statistics.
-    \item \textbf{Statistics Dashboard}: Matplotlib-generated charts showing player performance and game popularity.
-    \item \textbf{How-to-Play Guide}: Interactive in-game instructions for each game mode.
-    \item \textbf{Persistent Data Storage}: Game results saved to CSV files for later analysis.
+    \item \textbf{Authentication and setup}: a Bash launcher that authenticates users and prepares the Python runtime.
+    \item \textbf{Game orchestration}: a Pygame-based GUI that allows players to select games and interact with the board.
+    \item \textbf{Game logic}: reusable game rules implemented in Python classes, one per game mode.
 \end{itemize}
 
-\section{Code Logic Explanation}
+The architecture separates low-level game rules from presentation, making it easier to add new games and adapt the UI without rewriting the rule engine.
 
-\subsection{Generic Class (BoardGame)}
+\section{Installation and Running Instructions}
 
-The \texttt{BoardGame} class serves as a base class for all board games, providing common functionality:
+The repository provides a dependency declaration file and a launcher script for ease of setup.
+
+\subsection{Dependencies}
+
+Required Python packages are listed in \texttt{requirements.txt}:
 
 \begin{itemize}
-    \item \textbf{Initialization}: Sets up the board as a NumPy array, player names, and turn management.
-    \item \textbf{Turn Management}: Alternates between players using a simple index toggle.
-    \item \textbf{Abstract Methods}: Defines \texttt{check\_win()} as an abstract method that subclasses must implement.
+    \item \texttt{numpy==2.4.4}
+    \item \texttt{pygame==2.6.1}
+    \item \texttt{matplotlib==3.9.2}
 \end{itemize}
 
-\subsection{Game Implementations}
+The launcher script \texttt{main.sh} creates a Python virtual environment and installs any missing dependencies automatically.
 
-\subsubsection{Connect Four}
-\begin{itemize}
-    \item Uses a 7x7 grid where pieces fall to the lowest available row in a column.
-    \item Win detection checks for four consecutive pieces horizontally, vertically, or diagonally using NumPy array slicing.
-    \item Rendering includes hover previews and animated piece drops.
-\end{itemize}
+\subsection{Run the Project}
 
-\subsubsection{Othello (Reversi)}
-\begin{itemize}
-    \item Played on an 8x8 board with initial four pieces in the center.
-    \item Move validation uses vectorized NumPy operations to check for valid captures in all eight directions.
-    \item Disc flipping is implemented by iterating through captured sequences and updating the board.
-\end{itemize}
+From the repository root, execute:
 
-\subsubsection{Tic-Tac-Toe (Expanded)}
-\begin{itemize}
-    \item Uses a 10x10 grid requiring five in a row to win.
-    \item Win detection employs sliding window views to efficiently check all directions for winning sequences.
-    \item Includes hover hints and visual highlighting of winning cells.
-\end{itemize}
+\begin{verbatim}
+bash main.sh
+\end{verbatim}
 
-\subsection{Authentication System}
-
-The authentication system is implemented in Bash:
+This script also:
 
 \begin{itemize}
-    \item \textbf{User Input Validation}: Strips control characters and rejects invalid characters to prevent injection attacks.
-    \item \textbf{Password Hashing}: Uses SHA-256 to hash usernames and passwords before storage.
-    \item \textbf{File Storage}: Stores hashed credentials in a tab-separated values file.
-    \item \textbf{Login Flow}: Hashes input and compares against stored hashes for authentication.
+    \item creates the persistent data directory \texttt{data/}
+    \item initializes \texttt{data/users.tsv} and \texttt{data/history.csv}
+    \item prompts both players to log in or register
+    \item launches the game GUI using \texttt{src/game.py}
 \end{itemize}
 
-\subsection{Leaderboard}
+\subsection{Manual Launch}
 
-The leaderboard is generated by an AWK script:
+After authentication, the application may also be run directly with two player names:
+
+\begin{verbatim}
+python3 src/game.py <username1> <username2>
+\end{verbatim}
+
+When using the direct Python entry point, the same dependencies from \texttt{requirements.txt} must be installed in the active environment.
+
+\section{Code Structure}
+
+The project files are organized to keep UI, game logic, utilities, and scripts separate.
+
+\subsection{Top-level files}
 
 \begin{itemize}
-    \item \textbf{Data Processing}: Parses CSV history files to count wins, losses, and calculate win ratios per player per game.
-    \item \textbf{Sorting}: Uses Unix sort to order results by the specified metric (wins, losses, or ratio).
-    \item \textbf{Output Formatting}: Prints tabular results grouped by game type.
+    \item \texttt{main.sh}: Launcher and authentication script. Sets up the virtual environment, installs dependencies, and authenticates two players.
+    \item \texttt{leaderboard.sh}: Command-line script for generating a player leaderboard from history data.
+    \item \texttt{requirements.txt}: Lists Python package dependencies.
+    \item \texttt{README.md}: Project overview, setup hints, and usage notes.
 \end{itemize}
 
-\section{Hurdles Faced and Solutions}
-
-Several challenges were encountered during development:
+\subsection{Source modules}
 
 \begin{itemize}
-    \item \textbf{Input Validation}: Initial username input allowed control characters, causing display issues. Solved by implementing character filtering using \texttt{tr} and \texttt{sed} in Bash.
-    \item \textbf{Pygame Rendering}: Coordinating multiple UI elements (buttons, text, boards) required careful positioning calculations. Resolved by creating reusable drawing functions and consistent coordinate systems.
-    \item \textbf{Win Detection Algorithms}: Implementing efficient win checking for different games. Overcame by leveraging NumPy's array operations for vectorized computations.
-    \item \textbf{Cross-Platform Compatibility}: Ensuring the application works on different systems. Addressed by using relative paths and Python's pathlib for file operations.
+    \item \texttt{src/game.py}: Main Pygame entry point. It renders the hub menu, navigates between screens, and records game results. It also launches the chart dashboard and leaderboard script after a match.
+    \item \texttt{src/chart.py}: Generates statistics charts from \texttt{data/history.csv} using Matplotlib, showing player win counts, game popularity, and win rates.
+    \item \texttt{src/utils/Settings.py}: Stores shared constants for screen dimensions, colors, and UI styling.
+    \item \texttt{src/UI/buttons.py}: Shared button rendering helper used across game screens.
 \end{itemize}
 
-\section{What We Would Do Differently with 10 More Hours}
-
-With additional time, we would implement:
+\subsection{Game logic modules}
 
 \begin{itemize}
-    \item \textbf{Enhanced UI}: Add animations, sound effects, and a more polished visual design.
-    \item \textbf{Additional Games}: Implement more board games like Chess or Checkers.
-    \item \textbf{Network Play}: Add online multiplayer functionality using sockets or a web framework.
-    \item \textbf{Database Integration}: Replace file-based storage with a proper database for better scalability.
-    \item \textbf{Unit Tests}: Add comprehensive test suites for game logic and authentication.
-    \item \textbf{Configuration System}: Allow users to customize game settings and themes.
+    \item \texttt{src/games/BoardGame.py}: Base class for all board games. It provides the board state, turn switching, and the contract for the \texttt{check\_win()} method.
+    \item \texttt{src/games/connect4.py}: Connect Four implementation. It manages piece drops, board rendering, and four-in-a-row win detection.
+    \item \texttt{src/games/othello.py}: Othello/Reversi implementation. It handles move validation, disc flips, valid-move highlighting, and endgame scoring.
+    \item \texttt{src/games/tictactoe.py}: Extended Tic-Tac-Toe on a 10x10 board. It requires five in a row to win and uses sliding-window logic for efficient win detection.
 \end{itemize}
 
-\section{Bibliography}
+\section{Detailed Module Responsibilities}
+
+\subsection{\texttt{main.sh}}
+
+This script is the user-visible launcher. It:
+
+\begin{itemize}
+    \item creates or verifies \texttt{data/users.tsv} and \texttt{data/history.csv}
+    \item validates usernames and passwords
+    \item uses SHA-256 hashing for credential storage
+    \item prevents a single user from playing both sides in the same session
+    \item invokes \texttt{python3 src/game.py} once two players are authenticated
+\end{itemize}
+
+\subsection{\texttt{src/game.py}}
+
+\begin{itemize}
+    \item renders the welcome screen and main menu
+    \item provides navigation between game modes, leaderboard, and help cards
+    \item records match results to \texttt{data/history.csv}
+    \item calls \texttt{src/chart.py} and \texttt{leaderboard.sh} after matches
+\end{itemize}
+
+\subsection{Game classes}
+
+Each game class extends \texttt{BoardGame} and implements its own board rendering, click handling, and win conditions.
+
+\begin{itemize}
+    \item \texttt{Connect4}: stores a 7x7 board and checks horizontal, vertical, and diagonal winning sequences.
+    \item \texttt{Othello}: initializes the standard starting layout, computes valid captures in eight directions, and flips opponent discs.
+    \item \texttt{TicTacToe}: draws a 10x10 grid, highlights hover previews, and uses NumPy sliding-window views to detect five consecutive marks.
+\end{itemize}
+
+\section{References}
 
 \begin{enumerate}
     \item Pygame Documentation. \url{https://www.pygame.org/docs/}. Accessed April 2026.

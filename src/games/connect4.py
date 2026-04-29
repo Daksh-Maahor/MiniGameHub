@@ -121,20 +121,32 @@ class Connect4(BoardGame):
         """Check horizontal, vertical, and diagonal runs for a winner."""
         b = self.board
 
-        for p in [1,2]:
-            h = (b[:, :-3] == p) & (b[:, 1:-2] == p) & (b[:, 2:-1] == p) & (b[:, 3:] == p)
-            if np.any(h):
-                return self.players[p - 1]
-            v = (b[:-3, :] == p) & (b[1:-2, :] == p) & (b[2:-1, :] == p) & (b[3:, :] == p)
-            if np.any(v):
-                return self.players[p - 1]
-            d1 = (b[:-3, :-3] == p) & (b[1:-2, 1:-2] == p) & (b[2:-1, 2:-1] == p) & (b[3:, 3:] == p)
-            if np.any(d1):
-                return self.players[p - 1]
-            d2 = (b[3:, :-3] == p) & (b[2:-1, 1:-2] == p) & (b[1:-2, 2:-1] == p) & (b[:-3, 3:] == p)
-            if np.any(d2):
-                return self.players[p - 1]
+        h = (b[:, :-3] == 1) & (b[:, 1:-2] == 1) & (b[:, 2:-1] == 1) & (b[:, 3:] == 1)
+        if np.any(h):
+            return self.players[0]
+        v = (b[:-3, :] == 1) & (b[1:-2, :] == 1) & (b[2:-1, :] == 1) & (b[3:, :] == 1)
+        if np.any(v):
+            return self.players[0]
+        d1 = (b[:-3, :-3] == 1) & (b[1:-2, 1:-2] == 1) & (b[2:-1, 2:-1] == 1) & (b[3:, 3:] == 1)
+        if np.any(d1):
+            return self.players[0]
+        d2 = (b[3:, :-3] == 1) & (b[2:-1, 1:-2] == 1) & (b[1:-2, 2:-1] == 1) & (b[:-3, 3:] == 1)
+        if np.any(d2):
+            return self.players[0]
         
+        h = (b[:, :-3] == 2) & (b[:, 1:-2] == 2) & (b[:, 2:-1] == 2) & (b[:, 3:] == 2)
+        if np.any(h):
+            return self.players[1]
+        v = (b[:-3, :] == 2) & (b[1:-2, :] == 2) & (b[2:-1, :] == 2) & (b[3:, :] == 2)
+        if np.any(v):
+            return self.players[1]
+        d1 = (b[:-3, :-3] == 2) & (b[1:-2, 1:-2] == 2) & (b[2:-1, 2:-1] == 2) & (b[3:, 3:] == 2)
+        if np.any(d1):
+            return self.players[1]
+        d2 = (b[3:, :-3] == 2) & (b[2:-1, 1:-2] == 2) & (b[1:-2, 2:-1] == 2) & (b[:-3, 3:] == 2)
+        if np.any(d2):
+            return self.players[1]
+
         if np.all(b != 0):
             return "Draw"
 

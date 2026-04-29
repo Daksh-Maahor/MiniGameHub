@@ -196,12 +196,17 @@ class TicTacToe(BoardGame):
         # Clear any previous highlight.
         self.win_cells = []
 
-        for mark, player_idx in [(1, 0), (2, 1)]:
-            cells = winning_cells_for_mark(mark)
-            if cells:
-                self.win_cells = cells
-                self.win_player = mark
-                return self.players[player_idx]
+        cells = winning_cells_for_mark(1)
+        if cells:
+            self.win_cells = cells
+            self.win_player = 1
+            return self.players[0]
+
+        cells = winning_cells_for_mark(2)
+        if cells:
+            self.win_cells = cells
+            self.win_player = 2
+            return self.players[1]
 
         if np.all(b != 0):
             return "Draw"
