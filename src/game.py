@@ -308,8 +308,8 @@ def show_menu(screen, font, bg):
         pygame.draw.rect(screen, (20, 30, 60), panel_rect, 6, border_radius=22)
 
         # Header inside the header area (avoids overlap with cards).
-        title = title_font.render("MINI GAE HUB", True, TEXT_COLOR)
-        shadow = title_font.render("MINI GAE HUB", True, (0, 0, 0))
+        title = title_font.render("MINI GAME HUB", True, TEXT_COLOR)
+        shadow = title_font.render("MINI GAME HUB", True, (0, 0, 0))
         title_x = width // 2 - title.get_width() // 2
         title_y = panel_rect.y + int(header_h * 0.15)
         screen.blit(shadow, (title_x + 4, title_y + 4))
@@ -748,7 +748,7 @@ def game_main(player1, player2):
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     width, height = screen.get_size()
-    pygame.display.set_caption("Mini Gae Hub")
+    pygame.display.set_caption("Mini Game Hub")
 
     try:
         bg = pygame.image.load(str(BG_PATH)).convert()

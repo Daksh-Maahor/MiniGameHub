@@ -1,7 +1,7 @@
 # MINI GAME HUB
 This project is created by and **Daksh Maahor (25B0974)** and **Rujul Garg (25B0937)**.
 
-Mini Gae Hub is a two-player game launcher that uses Bash scripting for login/authentication and Pygame for the graphical game experience. Authenticated players can select a game, compete, and have their results persisted to a leaderboard.
+Mini Game Hub is a two-player game launcher that uses Bash scripting for login/authentication and Pygame for the graphical game experience. Authenticated players can select a game, compete, and have their results persisted to a leaderboard.
 
 ## Requirements
 
