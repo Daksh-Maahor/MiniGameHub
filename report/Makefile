@@ -1,7 +1,7 @@
 LATEX = pdflatex
 BIBTEX = bibtex
 
-TARGET = main
+TARGET = report
 
 all: $(TARGET).pdf
 
