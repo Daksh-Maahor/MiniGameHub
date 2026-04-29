@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Leaderboard generator. This script reads `data/history.csv` and prints a
+# summary table sorted by wins, losses, or win ratio.
+
 SORT_BY=$1
 
 if [ "$SORT_BY" == "wins" ]; then
@@ -13,7 +16,7 @@ else
     exit 1
 fi
 
-# Resolve script-relative paths
+# Resolve script-relative paths so the leaderboard works when called from anywhere.
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 HISTORY_PATH="$DIR/data/history.csv"
 

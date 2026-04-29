@@ -1,3 +1,4 @@
+# Shared color palette constants used across the game UI.
 WHITE = (255, 255, 255)
 GRAY  = (128, 128, 128)
 BACKGROUND_TOP = (21, 32, 76)
