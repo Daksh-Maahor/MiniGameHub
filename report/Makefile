@@ -15,4 +15,4 @@ clean:
 cleanall: clean
 	rm -f $(TARGET).pdf
 
-.PHONY: all clean cleanall view
+.PHONY: all clean cleanall
